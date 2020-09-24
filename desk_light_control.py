@@ -30,6 +30,11 @@ def turn_light_color(ip, rgb):
     light = Wizlight(ip, DEFAULT_PORT)
     asyncio.run(light.turn_on(PilotBuilder(rgb=rgb)))
 
+
+def update_brightness(ip, brightness):
+    light = Wizlight(ip, DEFAULT_PORT)
+    asyncio.run(light.turn_on(PilotBuilder(brightness=brightness)))
+
 def turn_light_scene(ip, scene):
     try:
         scene = int(scene)
@@ -126,6 +131,14 @@ class MyWindow(Gtk.Window):
 
         self.topbox.pack_start(self.grid, True, True, 0)
 
+
+        adj = Gtk.Adjustment(lower=0, upper=255, value=255,
+                             step_increment=1, page_increment=10)
+        self.brightness_scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL,
+                                          adjustment=adj)
+        self.brightness_scale.connect("value-changed", self.brightness_moved)
+        self.topbox.pack_start(self.brightness_scale, False, True, 0)
+
         self.off_button = Gtk.Button(label='Light Off')
         self.off_button.connect("clicked", self.on_off_button_clicked)
         self.topbox.pack_start(self.off_button, False, True, 0)
@@ -162,6 +175,9 @@ class MyWindow(Gtk.Window):
                     break
             else:
                 print('Failed to find mac', mac_to_find)
+
+    def brightness_moved(self, widget):
+        update_brightness(self.ip_entry.get_text(), int(widget.get_value()))
 
 
 win = MyWindow()
