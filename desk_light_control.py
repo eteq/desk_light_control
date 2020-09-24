@@ -116,7 +116,9 @@ class MyWindow(Gtk.Window):
         for i, c0 in enumerate(DEFAULT_COLORS):
             self.color_buttons.append(Gtk.ColorButton())
             self.color_buttons[-1].set_rgba(Gdk.RGBA(*c0, 1))
+            self.color_buttons[-1].set_hexpand(True)
             self.color_set_buttons.append(Gtk.Button(label='Set Light'))
+            self.color_set_buttons[-1].set_hexpand(True)
 
             self.color_set_buttons[-1].connect("clicked", self.on_set_color_button_clicked)
 
