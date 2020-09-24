@@ -2,6 +2,7 @@
 
 import json
 import socket
+import pathlib
 import asyncio
 
 import gi
@@ -74,13 +75,14 @@ def discover(verbose=True):
     return responses
 
 
-
-
 class DeskLightControlWindow(Gtk.Window):
     def __init__(self):
         self.timeouts = 0
 
         Gtk.Window.__init__(self, title="Desk Light Control")
+
+        icon_path = pathlib.Path(__file__).parent / 'icon.png'
+        self.set_icon_from_file(str(icon_path.absolute()))
 
         self.topbox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.VERTICAL)
         self.add(self.topbox)
