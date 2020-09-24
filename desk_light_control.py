@@ -76,11 +76,11 @@ def discover(verbose=True):
 
 
 
-class MyWindow(Gtk.Window):
+class DeskLightControlWindow(Gtk.Window):
     def __init__(self):
         self.timeouts = 0
 
-        Gtk.Window.__init__(self, title="Colorer")
+        Gtk.Window.__init__(self, title="Desk Light Control")
 
         self.topbox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.VERTICAL)
         self.add(self.topbox)
@@ -196,7 +196,7 @@ class MyWindow(Gtk.Window):
                               int(self.brightness_scale.get_value()))
 
 
-win = MyWindow()
+win = DeskLightControlWindow()
 win.connect("destroy", Gtk.main_quit)
 win.show_all()
 Gtk.main()
