@@ -118,7 +118,7 @@ class MyWindow(Gtk.Window):
             self.color_buttons[-1].set_rgba(Gdk.RGBA(*c0, 1))
             self.color_set_buttons.append(Gtk.Button(label='Set Light'))
 
-            self.color_set_buttons[-1].connect("clicked", self.on_set_button_clicked)
+            self.color_set_buttons[-1].connect("clicked", self.on_set_color_button_clicked)
 
             self.grid.attach(self.color_buttons[-1], 0, i, 1, 1)
             self.grid.attach(self.color_set_buttons[-1], 1, i, 1, 1)
@@ -148,19 +148,21 @@ class MyWindow(Gtk.Window):
         self.topbox.pack_start(self.off_button, False, True, 0)
 
 
-    def on_set_button_clicked(self, widget):
+    def on_set_color_button_clicked(self, widget):
         for i, w in enumerate(self.color_set_buttons):
             if w is widget:
                 rgba = self.color_buttons[i].get_rgba()
                 turn_light_color(self.ip_entry.get_text(),
                                  (rgba.red, rgba.green, rgba.blue))
+                self.scene_combo.set_active(-1)
                 break
         else:
             assert False, 'The callback came from a widget that should not exist!'
 
 
     def on_scene_changed(self, widget):
-        turn_light_scene(self.ip_entry.get_text(), widget.get_active_text())
+        if widget.get_active_text() is not None:
+            turn_light_scene(self.ip_entry.get_text(), widget.get_active_text())
 
 
     def on_off_button_clicked(self, widget):
