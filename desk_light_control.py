@@ -9,9 +9,9 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GLib
 
 from pywizlight.bulb import wizlight as Wizlight, PilotBuilder
+from pywizlight.scenes import SCENES
 
 DEFAULT_COLORS = [(0, 255, 0), (255,150, 0), (255,0,0)]
-DEFAULT_SCENE = 'Daylight'
 
 DEFAULT_IP = ""
 DEFAULT_PORT = 38899
@@ -123,15 +123,17 @@ class MyWindow(Gtk.Window):
             self.grid.attach(self.color_buttons[-1], 0, i, 1, 1)
             self.grid.attach(self.color_set_buttons[-1], 1, i, 1, 1)
 
-        # scene-setter
-        self.scene_button = Gtk.Button(label='Set Scene')
-        self.scene_button.connect("clicked", self.on_scene_button_clicked)
-        self.scene_entry = Gtk.Entry()
-        self.scene_entry.set_text(DEFAULT_SCENE)
-        self.grid.attach(self.scene_button, 0, len(DEFAULT_COLORS)+1, 1, 1)
-        self.grid.attach(self.scene_entry, 1, len(DEFAULT_COLORS)+1, 1, 1)
+        self.scene_label = Gtk.Label()
+        self.scene_label.set_text('Scene:')
+        self.grid.attach(self.scene_label, 0, len(DEFAULT_COLORS), 1, 1)
+        self.scene_combo = Gtk.ComboBoxText()
+        self.scene_combo.connect("changed", self.on_scene_changed)
+        for i, scene in enumerate(SCENES.values()):
+            self.scene_combo.append_text(scene)
+        self.grid.attach(self.scene_combo, 1, len(DEFAULT_COLORS), 1, 1)
 
         self.topbox.pack_start(self.grid, True, True, 0)
+
 
 
         adj = Gtk.Adjustment(lower=0, upper=255, value=255,
@@ -157,8 +159,8 @@ class MyWindow(Gtk.Window):
             assert False, 'The callback came from a widget that should not exist!'
 
 
-    def on_scene_button_clicked(self, widget):
-        turn_light_scene(self.ip_entry.get_text(), self.scene_entry.get_text())
+    def on_scene_changed(self, widget):
+        turn_light_scene(self.ip_entry.get_text(), widget.get_active_text())
 
 
     def on_off_button_clicked(self, widget):
