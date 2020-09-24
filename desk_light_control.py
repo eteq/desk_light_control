@@ -6,7 +6,7 @@ import asyncio
 
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 
 from pywizlight.bulb import wizlight as Wizlight, PilotBuilder
 
@@ -78,6 +78,8 @@ def discover(verbose=True):
 
 class MyWindow(Gtk.Window):
     def __init__(self):
+        self.timeouts = 0
+
         Gtk.Window.__init__(self, title="Colorer")
 
         self.topbox = Gtk.Box(spacing=6, orientation=Gtk.Orientation.VERTICAL)
@@ -135,7 +137,7 @@ class MyWindow(Gtk.Window):
         adj = Gtk.Adjustment(lower=0, upper=255, value=255,
                              step_increment=1, page_increment=10)
         self.brightness_scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL,
-                                          adjustment=adj)
+                                          adjustment=adj, digits=0)
         self.brightness_scale.connect("value-changed", self.brightness_moved)
         self.topbox.pack_start(self.brightness_scale, False, True, 0)
 
@@ -177,7 +179,15 @@ class MyWindow(Gtk.Window):
                 print('Failed to find mac', mac_to_find)
 
     def brightness_moved(self, widget):
-        update_brightness(self.ip_entry.get_text(), int(widget.get_value()))
+        self.timeouts += 1
+        GLib.timeout_add(200, self.brightness_callback)
+        self.w = int(widget.get_value())
+
+    def brightness_callback(self):
+        self.timeouts -= 1
+        if self.timeouts < 1 :
+            update_brightness(self.ip_entry.get_text(),
+                              int(self.brightness_scale.get_value()))
 
 
 win = MyWindow()
