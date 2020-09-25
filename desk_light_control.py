@@ -152,6 +152,9 @@ class DeskLightControlWindow(Gtk.Window):
         self.off_button.connect("clicked", self.on_off_button_clicked)
         self.topbox.pack_start(self.off_button, False, True, 0)
 
+        if DEFAULT_MAC:
+            self.on_discover_button_clicked(None)
+
 
     def on_set_color_button_clicked(self, widget):
         for i, w in enumerate(self.color_set_buttons):
