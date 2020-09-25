@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+import ast
 import json
 import socket
 import pathlib
@@ -12,12 +14,12 @@ from gi.repository import Gtk, Gdk, GLib
 from pywizlight.bulb import wizlight as Wizlight, PilotBuilder
 from pywizlight.scenes import SCENES
 
-DEFAULT_COLORS = [(0, 255, 0), (255,150, 0), (255,0,0)]
+DEFAULT_COLORS = ast.literal_eval(os.environ.get('DEFAULT_COLORS', '[(0, 255, 0), (255, 150, 0), (255, 0, 0)]'))
 
-DEFAULT_IP = ""
-DEFAULT_PORT = 38899
-DEFAULT_MAC = ""
-TIMEOUT = 0.2
+DEFAULT_IP = os.environ.get('DEFAULT_IP', '')
+DEFAULT_PORT = int(os.environ.get('DEFAULT_PORT', 38899))
+DEFAULT_MAC = os.environ.get('DEFAULT_MAC', '')
+TIMEOUT = float(os.environ.get('TIMEOUT', 0.2))
 
 def turn_light_on(ip):
     light = Wizlight(ip, DEFAULT_PORT)
