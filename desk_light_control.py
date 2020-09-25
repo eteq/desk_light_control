@@ -91,8 +91,7 @@ class DeskLightControlWindow(Gtk.Window):
         self.ip_label = Gtk.Label()
         self.ip_label.set_text(' IP: ')
         self.ip_entry = Gtk.Entry()
-        self.ip_entry.set_max_length(4*3+3)
-        self.ip_entry.set_width_chars(self.ip_entry.get_max_length())
+        self.ip_entry.set_width_chars(4*3+3)
         self.ip_entry.set_text(DEFAULT_IP)
         self.ip_box.pack_start(self.ip_label, False, True, 0)
         self.ip_box.pack_start(self.ip_entry, True, True, 0)
@@ -156,8 +155,8 @@ class DeskLightControlWindow(Gtk.Window):
         for i, w in enumerate(self.color_set_buttons):
             if w is widget:
                 rgba = self.color_buttons[i].get_rgba()
-                turn_light_color(self.ip_entry.get_text(),
-                                 (rgba.red, rgba.green, rgba.blue))
+                for ip in self.ip_entry.get_text().split(','):
+                    turn_light_color(ip, (rgba.red, rgba.green, rgba.blue))
                 self.scene_combo.set_active(-1)
                 break
         else:
@@ -166,16 +165,21 @@ class DeskLightControlWindow(Gtk.Window):
 
     def on_scene_changed(self, widget):
         if widget.get_active_text() is not None:
-            turn_light_scene(self.ip_entry.get_text(), widget.get_active_text())
+            for ip in self.ip_entry.get_text().split(','):
+                turn_light_scene(ip, widget.get_active_text())
 
 
     def on_off_button_clicked(self, widget):
-        turn_light_off(self.ip_entry.get_text())
+        for ip in self.ip_entry.get_text().split(','):
+            turn_light_off(ip)
 
 
     def on_discover_button_clicked(self, widget):
         responses = discover()
-        if self.mac_entry.get_text():
+        if self.mac_entry.get_text() == '':
+            allips = ','.join(list(responses.keys()))
+            self.ip_entry.set_text(allips)
+        elif self.mac_entry.get_text():
             mac_to_find = self.mac_entry.get_text().lower().replace(':', '')
             for ip, response in responses.items():
                 response = json.loads(response)
@@ -194,8 +198,8 @@ class DeskLightControlWindow(Gtk.Window):
     def brightness_callback(self):
         self.timeouts -= 1
         if self.timeouts < 1 :
-            update_brightness(self.ip_entry.get_text(),
-                              int(self.brightness_scale.get_value()))
+            for ip in self.ip_entry.get_text().split(','):
+                update_brightness(ip, int(self.brightness_scale.get_value()))
 
 
 win = DeskLightControlWindow()
